@@ -12,19 +12,13 @@ priorities, or move source-of-truth authority.
 
 ## How this differs from the native doctor commands
 
-The three checks answer different questions.
+It is deliberately separate from `codex doctor` in Codex and `/doctor` in
+Claude Code:
 
-| Check | Question it answers |
-| --- | --- |
-| `codex doctor` | Is the Codex installation, configuration, authentication, connectivity, and local runtime healthy? |
-| Claude Code `/doctor` or `claude doctor` | Is the Claude Code setup and local installation healthy? |
-| AgentOS Doctor | Do the configured operating files agree about current state, governance, and next work? |
-
-AgentOS Doctor can run the selected native doctor as an optional runtime check.
-It reports that result separately from operating-file findings. A healthy Codex
-or Claude installation does not prove that a dashboard, state file, or
-governance rule is current. Aligned operating files do not verify either host
-runtime.
+- `codex doctor` checks the Codex installation and runtime.
+- Claude Code’s `/doctor` and `claude doctor` check the Claude Code setup and runtime.
+- AgentOS Doctor checks the operating files an adopter declares: a live work
+  surface, dashboard, structured state, governance gates, and optional receipts.
 
 ## Quick start
 
