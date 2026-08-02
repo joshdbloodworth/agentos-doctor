@@ -2,19 +2,29 @@
 
 ![AgentOS Doctor launch graphic](assets/agentos-doctor-social.png)
 
-AgentOS Doctor is a report-only skill for Codex and Claude Code that checks
-whether a file-backed agent operating system still tells one consistent story.
+AgentOS Doctor is a report-only skill for Codex and Claude Code. It checks the
+files that define an AI operating system: the current work surface, structured
+state, dashboards, governance rules, and optional review receipts.
 
-It is deliberately separate from native `codex doctor`:
+Use it when those files may have drifted apart. It reports the specific mismatch
+and a small repair for a person to review. It does not edit files, choose
+priorities, or move source-of-truth authority.
 
-- `codex doctor` and `claude doctor` check their respective installations and
-  runtimes.
-- AgentOS Doctor checks the operating files an adopter declares: a live work
-  surface, dashboard, structured state, governance gates, and optional
-  receipts.
+## How this differs from the native doctor commands
 
-It never changes files. A warning identifies evidence and a minimal repair for
-a human to approve.
+The three checks answer different questions.
+
+| Check | Question it answers |
+| --- | --- |
+| `codex doctor` | Is the Codex installation, configuration, authentication, connectivity, and local runtime healthy? |
+| Claude Code `/doctor` or `claude doctor` | Is the Claude Code setup and local installation healthy? |
+| AgentOS Doctor | Do the configured operating files agree about current state, governance, and next work? |
+
+AgentOS Doctor can run the selected native doctor as an optional runtime check.
+It reports that result separately from operating-file findings. A healthy Codex
+or Claude installation does not prove that a dashboard, state file, or
+governance rule is current. Aligned operating files do not verify either host
+runtime.
 
 ## Quick start
 
@@ -60,14 +70,13 @@ It must not choose priorities, move source-of-truth authority, patch files,
 send messages, or change external systems. Keep the policy in the adopter's
 own files, not in the tool.
 
-## Sharing
+## Publishing a configuration
 
-This repository is designed to be a GitHub-friendly starter. Before publishing,
-replace the sample configuration with no real paths, secrets, customer data, or
-organization-specific policy text. Add a license appropriate for the intended
-audience.
+The example configuration uses fictional paths and files. Do not commit real
+paths, secrets, customer data, or organization-specific policy text to a public
+repository.
 
 The launch banner at `assets/agentos-doctor-social.png` is included for the
 README and launch materials. Use
 `assets/agentos-doctor-github-social.png` as the repository's GitHub social
-preview image when the public remote is created.
+preview image in repository settings.
