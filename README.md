@@ -1,5 +1,7 @@
 # AgentOS Doctor
 
+![AgentOS Doctor launch graphic](assets/agentos-doctor-social.png)
+
 AgentOS Doctor is a report-only skill for Codex and Claude Code that checks
 whether a file-backed agent operating system still tells one consistent story.
 
@@ -64,3 +66,7 @@ This repository is designed to be a GitHub-friendly starter. Before publishing,
 replace the sample configuration with no real paths, secrets, customer data, or
 organization-specific policy text. Add a license appropriate for the intended
 audience.
+
+The launch graphic at `assets/agentos-doctor-social.png` is included for the
+README and launch materials. When a GitHub remote is created, upload an
+appropriately sized derivative as the repository's social preview image.
