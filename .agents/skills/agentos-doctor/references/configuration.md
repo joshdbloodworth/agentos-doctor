@@ -16,8 +16,11 @@ Optional checks:
 - `dashboard` and `state`: compare Markdown blockers and tasks with JSON lists.
 - `governance`: verify required terms remain in controlling files.
 - `receipts`: warn when the newest receipt predates a named core surface.
-- `native_codex`: include `codex doctor --json`; disable only when it does not
-  apply to the adopter's environment.
+- `native_runtime`: optionally check the selected host runtime. Set
+  `{"provider": "codex"}` for `codex doctor --json`,
+  `{"provider": "claude"}` for `claude doctor`, or
+  `{"provider": "none"}` to omit runtime checks. Choose explicitly when both
+  CLIs are installed; AgentOS Doctor must not guess which one is authoritative.
 
 Use dotted paths for JSON values, such as `planning.next_actions`. The parity
 template may reference fields on each action object, for example

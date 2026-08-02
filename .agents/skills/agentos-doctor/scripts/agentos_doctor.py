@@ -107,6 +107,11 @@ def validate_config(config: Any, config_path: Path) -> tuple[Optional[dict[str, 
     if not root.is_dir():
         add(checks, "config.valid", "configuration", "FAIL", "Configured workspace root does not exist.", [str(root)], "Correct the root path; do not invent a replacement source.", True)
         return None, None, checks
+    runtime = config.get("native_runtime", {"provider": "none"})
+    provider = runtime.get("provider") if isinstance(runtime, dict) else None
+    if provider not in {"codex", "claude", "none"}:
+        add(checks, "config.valid", "configuration", "FAIL", "Native runtime provider is invalid.", [f"provider: {provider}"], "Set native_runtime.provider to codex, claude, or none.", True)
+        return None, None, checks
     add(checks, "config.valid", "configuration", "PASS", "Configuration is structurally valid.", [f"workspace: {config['workspace_name']}", f"root: {root}"])
     return config, root, checks
 
@@ -216,12 +221,7 @@ def check_receipts(checks: list[Check], config: dict[str, Any], root: Path) -> N
         add(checks, "receipts.recency", "receipts", "PASS", "Latest receipt is at least as recent as configured core surfaces.", [str(latest)])
 
 
-def check_native(checks: list[Check], enabled: bool, skipped: bool) -> None:
-    if not enabled:
-        return
-    if skipped:
-        add(checks, "runtime.codex-doctor", "runtime", "SKIP", "Native Codex Doctor was skipped by request.", ["--skip-native"])
-        return
+def check_native_codex(checks: list[Check]) -> None:
     candidates = [shutil.which("codex"), "/Applications/ChatGPT.app/Contents/Resources/codex"]
     executable = next((candidate for candidate in candidates if candidate and Path(candidate).is_file()), None)
     if not executable:
@@ -240,6 +240,36 @@ def check_native(checks: list[Check], enabled: bool, skipped: bool) -> None:
     add(checks, "runtime.codex-doctor", "runtime", mapped, f"Native Codex Doctor reported {status.lower()}.", evidence or ["all native checks reported OK"], "Review runtime remediation separately from operating-system policy." if mapped != "PASS" else None)
 
 
+def check_native_claude(checks: list[Check]) -> None:
+    executable = shutil.which("claude")
+    if not executable:
+        add(checks, "runtime.claude-doctor", "runtime", "SKIP", "Native Claude Doctor is unavailable in this environment.", ["claude executable not found"])
+        return
+    try:
+        result = subprocess.run([executable, "doctor"], text=True, capture_output=True, timeout=45, check=False)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        add(checks, "runtime.claude-doctor", "runtime", "SKIP", "Native Claude Doctor could not complete in this environment.", [str(error)])
+        return
+    output = (result.stdout + result.stderr).strip()
+    evidence = [line for line in output.splitlines() if line.strip()][-6:] or ["no diagnostic output"]
+    if result.returncode == 0:
+        add(checks, "runtime.claude-doctor", "runtime", "PASS", "Native Claude Doctor completed successfully.", evidence)
+    else:
+        add(checks, "runtime.claude-doctor", "runtime", "FAIL", "Native Claude Doctor returned a non-zero status.", [f"exit code: {result.returncode}", *evidence], "Review Claude Doctor output separately from operating-system policy.")
+
+
+def check_native(checks: list[Check], provider: str, skipped: bool) -> None:
+    if provider == "none":
+        return
+    if skipped:
+        add(checks, "runtime.native-doctor", "runtime", "SKIP", f"Native {provider.title()} Doctor was skipped by request.", ["--skip-native"])
+        return
+    if provider == "codex":
+        check_native_codex(checks)
+    else:
+        check_native_claude(checks)
+
+
 def build_report(config_path: Path, skip_native: bool) -> dict[str, Any]:
     try:
         raw = json.loads(config_path.read_text(encoding="utf-8"))
@@ -253,7 +283,8 @@ def build_report(config_path: Path, skip_native: bool) -> dict[str, Any]:
     check_state_and_parity(checks, config, root)
     check_governance(checks, config, root)
     check_receipts(checks, config, root)
-    check_native(checks, bool(config.get("native_codex", True)), skip_native)
+    runtime = config.get("native_runtime", {"provider": "none"})
+    check_native(checks, str(runtime["provider"]), skip_native)
     overall = {0: "PASS", 1: "WARN", 2: "FAIL"}[max((rank(check.status) for check in checks), default=0)]
     return {"generated_at": datetime.now(timezone.utc).isoformat(), "workspace_name": config["workspace_name"], "overall_status": overall, "checks": [asdict(check) for check in checks]}
 
@@ -274,7 +305,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run a report-only AgentOS health audit.")
     parser.add_argument("--config", required=True, type=Path, help="Path to agentos-doctor JSON configuration.")
     parser.add_argument("--json", action="store_true", help="Emit machine-readable output.")
-    parser.add_argument("--skip-native", action="store_true", help="Skip native codex doctor.")
+    parser.add_argument("--skip-native", action="store_true", help="Skip the configured native runtime doctor.")
     args = parser.parse_args()
     report = build_report(args.config.resolve(), args.skip_native)
     print(json.dumps(report, indent=2) if args.json else render(report))

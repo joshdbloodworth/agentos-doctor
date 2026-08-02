@@ -1,12 +1,12 @@
 # AgentOS Doctor
 
-AgentOS Doctor is a report-only Codex skill for checking whether a file-backed
-agent operating system still tells one consistent story.
+AgentOS Doctor is a report-only skill for Codex and Claude Code that checks
+whether a file-backed agent operating system still tells one consistent story.
 
 It is deliberately separate from native `codex doctor`:
 
-- `codex doctor` checks the Codex installation, authentication, runtime, and
-  connectivity.
+- `codex doctor` and `claude doctor` check their respective installations and
+  runtimes.
 - AgentOS Doctor checks the operating files an adopter declares: a live work
   surface, dashboard, structured state, governance gates, and optional
   receipts.
@@ -18,8 +18,9 @@ a human to approve.
 
 1. Copy `examples/agentos-doctor.example.json` to your operating-system root
    and replace the sample paths and terms with your own.
-2. Keep the skill at `.agents/skills/agentos-doctor/` in the repository that
-   contains your configuration, or install it through your Codex skill path.
+2. Keep the canonical skill at `.agents/skills/agentos-doctor/`. This repository
+   includes a `.claude/skills/agentos-doctor` link to that same folder, so the
+   same version is discoverable by either host.
 3. Run:
 
    ```bash
@@ -43,8 +44,12 @@ Start with the smallest stable set of files:
 - dashboard and JSON state with blockers and next actions;
 - approval/source-of-truth terms in governance files.
 
-Receipt recency and native Codex runtime checks are optional. Configuration is
+Receipt recency and native runtime checks are optional. Configuration is
 documented in the skill's `references/configuration.md`.
+
+Set `native_runtime.provider` to `codex`, `claude`, or `none`. Choose the host
+explicitly when both CLIs are installed. The operating-system checks are the
+same in either tool; only the optional host-runtime diagnostic changes.
 
 ## Boundaries
 

@@ -34,5 +34,7 @@
       "required_terms": ["approval", "source of truth"]
     }
   ],
-  "native_codex": true
+  "native_runtime": {
+    "provider": "none"
+  }
 }
