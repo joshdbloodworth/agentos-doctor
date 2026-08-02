@@ -1,0 +1,38 @@
+{
+  "workspace_name": "Example AgentOS",
+  "root": "sample-workspace",
+  "required_files": [
+    "OPERATING.md",
+    "ACTIVE.md",
+    "DASHBOARD.md",
+    "state.json",
+    "governance.md"
+  ],
+  "live_surface": {
+    "path": "ACTIVE.md",
+    "date_pattern": "^Last refreshed:\\s*(\\d{4}-\\d{2}-\\d{2})\\s*$"
+  },
+  "dashboard": {
+    "path": "DASHBOARD.md",
+    "date_pattern": "^Last refreshed:\\s*(\\d{4}-\\d{2}-\\d{2})\\s*$"
+  },
+  "state": {
+    "path": "state.json",
+    "date_field": "date"
+  },
+  "parity": {
+    "blockers_heading": "Blockers",
+    "actions_heading": "Next Actions",
+    "state_blockers_path": "blocked_items",
+    "state_actions_path": "next_actions",
+    "blocker_item_field": "item",
+    "action_template": "[{domain}] {task} - {outcome}"
+  },
+  "governance": [
+    {
+      "path": "governance.md",
+      "required_terms": ["approval", "source of truth"]
+    }
+  ],
+  "native_codex": true
+}

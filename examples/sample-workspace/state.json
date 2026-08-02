@@ -1,0 +1,13 @@
+{
+  "date": "2026-08-02",
+  "blocked_items": [
+    {"item": "Confirm the owner before changing policy."}
+  ],
+  "next_actions": [
+    {
+      "domain": "Operations",
+      "task": "Confirm the owner",
+      "outcome": "establish accountable review."
+    }
+  ]
+}

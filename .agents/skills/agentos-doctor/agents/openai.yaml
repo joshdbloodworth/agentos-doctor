@@ -1,0 +1,4 @@
+interface:
+  display_name: "AgentOS Doctor"
+  short_description: "Audit a file-backed agent operating system"
+  default_prompt: "Use $agentos-doctor to audit my configured AgentOS workspace in report-only mode."
